@@ -19,20 +19,6 @@ fn part_1(input: &str) -> u32 {
 
     let mut sum = 0;
     for item in lines {
-        // does this have empty fields?
-        // let numbers: Vec<u32> = item
-        //     .split(char::is_alphabetic)
-        //     .filter(|x| !x.is_empty())
-        //     .map(|x| x.parse::<u32>())
-        //     .filter_map(Result::ok)
-        //     .collect();
-
-        // // I have [1, 4, 12]
-        // // I want [1. 2]
-
-        // // println!("{:?}", &numbers);
-        // sum += numbers[0] * 10 + numbers[numbers.len()-1];
-
         sum += get_line_number(item);
     }
 
@@ -57,13 +43,17 @@ fn part_2(input: &str) -> u32 {
 fn get_line_number(line: &str) -> u32 {
     let split: Vec<&str> = line.split("").collect();
     let mut sum = 0;
+    // forwards
     for item in &split {
         if let Ok(num) = item.parse::<u32>() {
+            // I don't need to figure out how to stitch the numbers together
+            // just the first number x 10
             sum += num * 10;
             break;
         }
     }
     for i in 0..split.len() {
+        // loop in reverse
         let item = split[split.len() - 1 - i];
         if let Ok(num) = item.parse::<u32>() {
             sum += num;
@@ -71,18 +61,35 @@ fn get_line_number(line: &str) -> u32 {
         }
     }
 
-    // println!("{}", sum);
     sum
 }
 
 fn get_line_number_including_words(line: &str) -> u32 {
+    // efficiencies:
+    // when it finds something, it stops so it never goes through the whole array
+    // inefficiencies
+    // it checks the next ~5 places, ~10 times for each iteration
+    // ex. i=0
+    // it will check split[0] for a number
+    // then it will check split[0], split[1], split[2] for "one"
+    // then it will check the same 3 for "two"
+    // I could have it quit early if it doesn't find a correct letter
+    // in one, two, three, four, five, six, seven, eight
+    // there is no q, y, p, d, j, etc.
+    // so I could quit out early on those letters
+    // would this actually save any time? probably not really
+
+    // alternate solutions
+    // seems what other people were doing was find and replace
+    // abcnineabc -> abc9abc
+    // they were having trouble with oneight
+    // should be 18, but they would get 1ight with the e getting cut off
     let split: Vec<&str> = line.split("").filter(|x| !x.is_empty()).collect();
     let mut sum = 0;
     for i in 0..split.len() {
         // is it a number?
         if let Ok(num) = split[i].parse::<u32>() {
             sum += num * 10;
-            // println!("found a number");
             break;
         } else if (split.len() - i >= 3)
             && split[i] == "o"
@@ -282,8 +289,12 @@ mod tests {
 
     #[test]
     fn letter_checking() {
+        // checking if this works how I think it does
         let line = "two1nine";
         let split: Vec<&str> = line.split("").filter(|x| !x.is_empty()).collect();
         assert_eq!("t", split[0]);
+        // I can also do this
+        assert_eq!("two", &line[..3]);
+        assert_eq!("nine", &line[4..]);
     }
 }
