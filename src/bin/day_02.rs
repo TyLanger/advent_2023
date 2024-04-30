@@ -5,6 +5,7 @@ fn main() {
 
     println!("{}", part_1(&input));
     // 2278 correct
+    println!("{}", part_2(&input));
 }
 
 fn part_1(input: &str) -> u32 {
@@ -37,7 +38,7 @@ fn part_1(input: &str) -> u32 {
         // check a number and its associated colour
         // if the number is smaller than the smallest of cubes (12), can skip it
         for i in 2..split.len() {
-            if (i-1) % 2 == 0 {
+            if (i - 1) % 2 == 0 {
                 // skip the odd indicies. They are "blue", "red"
                 // numbers are the even indicies
                 continue;
@@ -78,6 +79,80 @@ fn part_1(input: &str) -> u32 {
     sum
 }
 
+fn part_2(input: &str) -> u32 {
+    // find the largest of each colour in a game
+    // Game 1: 3 blue, 4 red; 1 red, 2 green, 6 blue; 2 green
+    // 4 red, 2 green, 6 blue
+    // then multipl them together. 4 x 2 x 6 = 48
+    // sum all the powers and return
+
+    // could I sort them?
+    // get ["4 green", "2 green", "6 red", "1 red", "4 blue"]
+
+    let lines: Vec<&str> = input.lines().collect();
+
+    let mut sum = 0;
+
+    for line in lines {
+        // let split: Vec<&str> = line.split(' ').filter(|x| !x.is_empty()).collect();
+
+        // sorted version
+        let mut split: Vec<&str> = line
+            .split(&[':', ',', ';'])
+            .collect();
+        // ["Game 1", " 3 blue", " 4 red", " 1 red", " 2 green", " 6 blue", " 2 green"]
+        split.sort();
+        // [" 1 red", " 2 green", " 2 green", " 3 blue", " 4 red", " 6 blue", "Game 1"]
+
+        // sort
+        // when sorted, the largest numbers are to the right
+        // need to just iterate until you find each colour and then you can quit
+        // bc you know you have the biggest numbers
+
+        // error
+        // sorting breaks with double digits...
+        // 14 blue, 6 blue
+        // error 2
+        // "    game 2", " 6 green"
+        // game also gets sorted to the start on subsequent games...
+
+        let mut max_red = 0;
+        let mut max_blue = 0;
+        let mut max_green = 0;
+
+        for i in 0..split.len() {
+            // -2 bc we skip "game x"
+            let last = split[split.len() - 2 - i];
+            // turn " 6 blue" into:
+            // ["", "6", "blue"]
+            let second_split: Vec<&str> = last.split(' ').collect();
+            // figure out what colour
+            // only check a colour if we haven't yet (max is still 0)
+            if max_red == 0 && second_split[2] == "red" {
+                if let Ok(num) = second_split[1].parse::<u32>() {
+                    max_red = num;
+                }
+            } else if max_blue == 0 && second_split[2] == "blue" {
+                if let Ok(num) = second_split[1].parse::<u32>() {
+                    max_blue = num;
+                }
+            } else if max_green == 0 && second_split[2] == "green" {
+                if let Ok(num) = second_split[1].parse::<u32>() {
+                    max_green = num;
+                }
+            }
+
+            if max_red > 0 && max_blue > 0 && max_green > 0 {
+                break;
+            }
+        }
+
+        sum += max_red * max_blue * max_green;
+    }
+
+    sum
+}
+
 #[cfg(test)]
 mod tests {
 
@@ -95,6 +170,11 @@ mod tests {
     }
 
     #[test]
+    fn part_2_works() {
+        assert_eq!(2286, part_2(&BASIC_INPUT_DAY_2));
+    }
+
+    #[test]
     fn colour_names() {
         // does it ignore the , or ; at the end?
         let red = "red,";
@@ -105,5 +185,23 @@ mod tests {
 
         let green = "green";
         assert_eq!("green", &green[..5]);
+    }
+
+    #[test]
+    fn sort_test() {
+        let lines: Vec<&str> = BASIC_INPUT_DAY_2.lines().collect();
+        let mut split: Vec<&str> = lines[0].split(&[':', ',', ';']).collect();
+        split.sort();
+        println!("{:?}", split);
+        // before
+        // ["Game 1", " 3 blue", " 4 red", " 1 red", " 2 green", " 6 blue", " 2 green"]
+        // after
+        // [" 1 red", " 2 green", " 2 green", " 3 blue", " 4 red", " 6 blue", "Game 1"]
+        // I think I can work with this
+
+        let second_split: Vec<&str> = split[5].split(' ').collect();
+        println!("{:?}", second_split);
+        // ["", "6", "blue"]
+        assert_eq!(6, second_split[1].parse::<u32>().unwrap());
     }
 }
