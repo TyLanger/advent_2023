@@ -6,6 +6,7 @@ fn main() {
     println!("{}", part_1(&input));
     // 2278 correct
     println!("{}", part_2(&input));
+    // 67953 correct
 }
 
 fn part_1(input: &str) -> u32 {
@@ -96,12 +97,13 @@ fn part_2(input: &str) -> u32 {
     for line in lines {
         // let split: Vec<&str> = line.split(' ').filter(|x| !x.is_empty()).collect();
 
-        // sorted version
-        let mut split: Vec<&str> = line
+        let split: Vec<&str> = line
             .split(&[':', ',', ';'])
             .collect();
+
+        // sort didn't work
         // ["Game 1", " 3 blue", " 4 red", " 1 red", " 2 green", " 6 blue", " 2 green"]
-        split.sort();
+        // split.sort();
         // [" 1 red", " 2 green", " 2 green", " 3 blue", " 4 red", " 6 blue", "Game 1"]
 
         // sort
@@ -120,30 +122,31 @@ fn part_2(input: &str) -> u32 {
         let mut max_blue = 0;
         let mut max_green = 0;
 
-        for i in 0..split.len() {
-            // -2 bc we skip "game x"
-            let last = split[split.len() - 2 - i];
+        for i in 1..split.len() {
+            // start at 1 to skip "game x"
+            
             // turn " 6 blue" into:
             // ["", "6", "blue"]
-            let second_split: Vec<&str> = last.split(' ').collect();
+            let second_split: Vec<&str> = split[i].split(' ').collect();
             // figure out what colour
-            // only check a colour if we haven't yet (max is still 0)
-            if max_red == 0 && second_split[2] == "red" {
+            if second_split[2] == "red" {
                 if let Ok(num) = second_split[1].parse::<u32>() {
-                    max_red = num;
+                    if num > max_red {
+                        max_red = num;
+                    }
                 }
-            } else if max_blue == 0 && second_split[2] == "blue" {
+            } else if second_split[2] == "blue" {
                 if let Ok(num) = second_split[1].parse::<u32>() {
-                    max_blue = num;
+                    if num > max_blue {
+                        max_blue = num;
+                    }
                 }
-            } else if max_green == 0 && second_split[2] == "green" {
+            } else if second_split[2] == "green" {
                 if let Ok(num) = second_split[1].parse::<u32>() {
-                    max_green = num;
+                    if num > max_green {
+                        max_green = num;
+                    }
                 }
-            }
-
-            if max_red > 0 && max_blue > 0 && max_green > 0 {
-                break;
             }
         }
 
@@ -203,5 +206,6 @@ mod tests {
         println!("{:?}", second_split);
         // ["", "6", "blue"]
         assert_eq!(6, second_split[1].parse::<u32>().unwrap());
+        // this case works, but other don't
     }
 }
