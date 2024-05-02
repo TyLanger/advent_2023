@@ -97,9 +97,7 @@ fn part_2(input: &str) -> u32 {
     for line in lines {
         // let split: Vec<&str> = line.split(' ').filter(|x| !x.is_empty()).collect();
 
-        let split: Vec<&str> = line
-            .split(&[':', ',', ';'])
-            .collect();
+        let split: Vec<&str> = line.split(&[':', ',', ';']).collect();
 
         // sort didn't work
         // ["Game 1", " 3 blue", " 4 red", " 1 red", " 2 green", " 6 blue", " 2 green"]
@@ -124,7 +122,7 @@ fn part_2(input: &str) -> u32 {
 
         for i in 1..split.len() {
             // start at 1 to skip "game x"
-            
+
             // turn " 6 blue" into:
             // ["", "6", "blue"]
             let second_split: Vec<&str> = split[i].split(' ').collect();
