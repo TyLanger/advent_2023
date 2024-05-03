@@ -50,20 +50,8 @@ fn part_1(input: &str) -> u32 {
         empty_line.push(".");
     }
 
-    // println!("{:?}", empty_line);
-    // println!("{:?}", line_a);
-    // println!("{:?}", line_b);
-    // println!("{:?}", line_c);
-    // let mut sum = 0;
-
-    // // test
-    // sum += get_center_sum_from_lines(&line_a, &line_b, &line_c);
-    // println!("sum 617 = {}", sum);
-    // return sum;
 
     let mut sum = get_center_sum_from_lines(&empty_line, &line_a, &line_b);
-    // println!("first sum {}", sum);
-    // println!("sum 35 + 633 = {}", sum);
 
     for i in 1..lines.len() {
         match i % 3 {
@@ -117,6 +105,7 @@ fn part_1(input: &str) -> u32 {
 }
 
 fn part_2(input: &str) -> u32 {
+    // Notes:
     // need to find gears
     // 123*45
     // ....
@@ -145,7 +134,7 @@ fn part_2(input: &str) -> u32 {
     // ....4
     // find 3, but don't search for 12 until you know 4 exists
     // getting clever like this is probablymore trouble than its worth
-    // but I do need a way to figure out if there are 2 separater numbers
+    // but I do need a way to figure out if there are 2 separate numbers
     // 123   1..   1.1
     // .*.   .*.   .*.
     // ...   ...   ...
@@ -156,6 +145,8 @@ fn part_2(input: &str) -> u32 {
     // ...*.  ..*.  .*.  ..*.  .*.  .*.
     // that would make for some messy nested if statements
 
+    // This code is the same as part 1
+    // just swap get_center_sum_from_lines() for get_gear_ratio_from_lines()
     let lines: Vec<&str> = input.lines().collect();
 
     let mut line_a: Vec<&str> = lines[0].split("").filter(|x| !x.is_empty()).collect();
@@ -230,12 +221,10 @@ fn get_gear_ratio_from_lines(top: &Vec<&str>, mid: &Vec<&str>, bot: &Vec<&str>) 
     let mut sum = 0;
     for i in 0..mid.len() {
         if mid[i] == "*" {
-            // println!("Found * at {}", i);
             let top_numbers = get_numbers_from_line(&top, i);
             let mid_numbers = get_numbers_from_line(&mid, i);
             let bot_numbers = get_numbers_from_line(&bot, i);
 
-            // only update sum if exactly 2 numbers
             let mut the_numbers = Vec::new();
             if let Some(num) = top_numbers.0 {
                 the_numbers.push(num);
@@ -256,6 +245,8 @@ fn get_gear_ratio_from_lines(top: &Vec<&str>, mid: &Vec<&str>, bot: &Vec<&str>) 
                 the_numbers.push(num);
             }
 
+            // only update sum if exactly 2 numbers
+            // I don't think the input has any cases with 3 adjacent numbers, but oh well
             if the_numbers.len() == 2 {
                 sum += the_numbers[0] * the_numbers[1];
             }
@@ -270,7 +261,6 @@ fn get_numbers_from_line(line: &Vec<&str>, index: usize) -> (Option<u32>, Option
     // cases
     // can be 0, 1, 2 numbers per line
     // can only be 2 numbers if the center is empty
-    // let mut amount_of_numbers = 0;
     let mut all_numbers = [None; 7];
     if i > 0 {
         if let Ok(left) = line[i - 1].parse::<u32>() {
@@ -289,10 +279,14 @@ fn get_numbers_from_line(line: &Vec<&str>, index: usize) -> (Option<u32>, Option
 
     // all 3 failed
     // return no numbers
+    // ...
+    // .*.
     if all_numbers[2].is_none() && all_numbers[3].is_none() && all_numbers[4].is_none() {
         return (None, None);
     }
 
+    // 123
+    // .*.
     if all_numbers[2].is_some() && all_numbers[3].is_some() && all_numbers[4].is_some() {
         // 3 digit number centered
         let sum =
@@ -326,6 +320,8 @@ fn get_numbers_from_line(line: &Vec<&str>, index: usize) -> (Option<u32>, Option
                 multiplier *= 10;
             }
         }
+        // 1..   12..   123..
+        // .*.   ..*.   ...*.
         return (Some(sum), None);
     } else {
         // check right
@@ -344,6 +340,8 @@ fn get_numbers_from_line(line: &Vec<&str>, index: usize) -> (Option<u32>, Option
 
     // 2 numbers
     // can only be 2 numbers if the center is empty
+    // 123.123   12.12   1.1
+    // ...*...   ..*..   .*.
     if all_numbers[2].is_some() && all_numbers[3].is_none() && all_numbers[4].is_some() {
         let mut left_sum = 0;
         let mut multiplier = 1;
@@ -374,6 +372,8 @@ fn get_numbers_from_line(line: &Vec<&str>, index: usize) -> (Option<u32>, Option
             multiplier *= 10;
         }
     }
+    // ..1   ...12   ..123
+    // .*.   ..*.    .*.
     (Some(right_sum), None)
 }
 
