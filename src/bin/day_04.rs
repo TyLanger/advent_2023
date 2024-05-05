@@ -4,6 +4,7 @@ fn main() {
     let input = fs::read_to_string("./inputs/day_04_input.txt").unwrap();
 
     println!("{}", part_1(&input));
+    // 24175
 }
 
 fn part_1(input: &str) -> u32 {
@@ -45,24 +46,27 @@ fn part_1(input: &str) -> u32 {
                 }
             }
         }
-        sum += match num_hits {
-            0 => 0,
-            1 => 1,
-            2 => 2,
-            3 => 4,
-            4 => 8,
-            5 => 16,
-            6 => 32,
-            7 => 64,
-            8 => 128,
-            9 => 256,
-            10 => 512,
-            11 => 1024,
-            _ => {
-                println!("hit 12+ hits. Shouldn't be possible");
-                0
-            }
-        };
+        if num_hits > 0 {
+            sum += 1 << (num_hits -1);
+        }
+        // sum += match num_hits {
+        //     0 => 0,
+        //     1 => 1,
+        //     2 => 2,
+        //     3 => 4,
+        //     4 => 8,
+        //     5 => 16,
+        //     6 => 32,
+        //     7 => 64,
+        //     8 => 128,
+        //     9 => 256,
+        //     10 => 512,
+        //     11 => 1024,
+        //     _ => {
+        //         println!("hit 12+ hits. Shouldn't be possible");
+        //         0
+        //     }
+        // };
     }
 
     sum
