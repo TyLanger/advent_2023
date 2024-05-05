@@ -50,7 +50,6 @@ fn part_1(input: &str) -> u32 {
         empty_line.push(".");
     }
 
-
     let mut sum = get_center_sum_from_lines(&empty_line, &line_a, &line_b);
 
     for i in 1..lines.len() {
